@@ -93,7 +93,6 @@ class _TelaLoginState extends State<TelaLogin> {
                     const SizedBox(height: 30),
                     ElevatedButton(
                       onPressed: () {
-                        // Aqui navega para tela inicial (substitua pela sua rota)
                         Navigator.pushReplacementNamed(context, '/inicial');
                       },
                       style: ElevatedButton.styleFrom(
@@ -116,9 +115,7 @@ class _TelaLoginState extends State<TelaLogin> {
                     ),
                     const SizedBox(height: 10),
                     TextButton(
-                      onPressed: () {
-                        // Ação para esquecer a senha
-                      },
+                      onPressed: () {},
                       child: const Text(
                         'Esqueceu sua senha?',
                         style: TextStyle(
@@ -132,9 +129,7 @@ class _TelaLoginState extends State<TelaLogin> {
               ),
               const SizedBox(height: 40),
               ElevatedButton(
-                onPressed: () {
-                  // Outra ação de login (se quiser)
-                },
+                onPressed: () {},
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
