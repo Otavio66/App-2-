@@ -19,8 +19,23 @@ class _TelaLoginState extends State<TelaLogin> {
         email: userController.text.trim(),
         password: passController.text.trim(),
       );
-      // Se o login for bem-sucedido, redireciona para a tela inicial
-      Navigator.pushReplacementNamed(context, '/inicial');
+
+      User? user = userCredential.user;
+      if (user != null) {
+        // Pega displayName ou email
+        String nomeUsuario = user.displayName ?? user.email ?? 'Usuário';
+
+        // Remove domínio do email se existir
+        if (nomeUsuario.contains('@')) {
+          nomeUsuario = nomeUsuario.split('@')[0];
+        }
+
+        Navigator.pushReplacementNamed(
+          context,
+          '/inicial',
+          arguments: {'nomeUsuario': nomeUsuario},
+        );
+      }
     } on FirebaseAuthException catch (e) {
       String errorMessage = 'Erro desconhecido';
       if (e.code == 'user-not-found') {
@@ -28,10 +43,9 @@ class _TelaLoginState extends State<TelaLogin> {
       } else if (e.code == 'wrong-password') {
         errorMessage = 'Senha incorreta.';
       }
-      // Exibe a mensagem de erro
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(errorMessage)));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(errorMessage)),
+      );
     }
   }
 
@@ -116,7 +130,7 @@ class _TelaLoginState extends State<TelaLogin> {
                     ),
                     const SizedBox(height: 30),
                     ElevatedButton(
-                      onPressed: signIn, // Chama a função de login
+                      onPressed: signIn,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.grey[700],
                         shape: RoundedRectangleBorder(

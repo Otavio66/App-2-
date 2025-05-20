@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class TelaInicial extends StatelessWidget {
-  const TelaInicial({super.key});
+  final String nomeUsuario;
+
+  const TelaInicial({super.key, required this.nomeUsuario});
 
   @override
   Widget build(BuildContext context) {
@@ -31,9 +33,9 @@ class TelaInicial extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
-              'BEM VINDO, (Usuário) !',
-              style: TextStyle(
+            Text(
+              'BEM VINDO, $nomeUsuario !',
+              style: const TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
@@ -101,7 +103,6 @@ class TelaInicial extends StatelessWidget {
                       GestureDetector(
                         onTap: () {
                           print('Clicou em Totais');
-                          // Coloque aqui a ação desejada para Totais
                         },
                         child: const Text(
                           'Totais',
@@ -116,7 +117,6 @@ class TelaInicial extends StatelessWidget {
                       GestureDetector(
                         onTap: () {
                           print('Clicou em Ativos');
-                          // Coloque aqui a ação desejada para Ativos
                         },
                         child: const Text(
                           'Ativos',
@@ -131,7 +131,6 @@ class TelaInicial extends StatelessWidget {
                       GestureDetector(
                         onTap: () {
                           print('Clicou em Resolvidos');
-                          // Coloque aqui a ação desejada para Resolvidos
                         },
                         child: const Text(
                           'Resolvidos',

@@ -18,9 +18,17 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       initialRoute: '/login',
-      routes: {
-        '/login': (context) => const TelaLogin(),
-        '/inicial': (context) => const TelaInicial(),
+      onGenerateRoute: (settings) {
+        if (settings.name == '/login') {
+          return MaterialPageRoute(builder: (_) => const TelaLogin());
+        } else if (settings.name == '/inicial') {
+          final args = settings.arguments as Map<String, dynamic>?;
+          final nomeUsuario = args?['nomeUsuario'] ?? 'Usuário';
+          return MaterialPageRoute(
+            builder: (_) => TelaInicial(nomeUsuario: nomeUsuario),
+          );
+        }
+        return null;
       },
     );
   }
