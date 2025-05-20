@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class TelaLogin extends StatefulWidget {
@@ -10,6 +11,29 @@ class TelaLogin extends StatefulWidget {
 class _TelaLoginState extends State<TelaLogin> {
   final TextEditingController userController = TextEditingController();
   final TextEditingController passController = TextEditingController();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  Future<void> signIn() async {
+    try {
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+        email: userController.text.trim(),
+        password: passController.text.trim(),
+      );
+      // Se o login for bem-sucedido, redireciona para a tela inicial
+      Navigator.pushReplacementNamed(context, '/inicial');
+    } on FirebaseAuthException catch (e) {
+      String errorMessage = 'Erro desconhecido';
+      if (e.code == 'user-not-found') {
+        errorMessage = 'Nenhum usuário encontrado para esse e-mail.';
+      } else if (e.code == 'wrong-password') {
+        errorMessage = 'Senha incorreta.';
+      }
+      // Exibe a mensagem de erro
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(errorMessage)));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -92,9 +116,7 @@ class _TelaLoginState extends State<TelaLogin> {
                     ),
                     const SizedBox(height: 30),
                     ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushReplacementNamed(context, '/inicial');
-                      },
+                      onPressed: signIn, // Chama a função de login
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.grey[700],
                         shape: RoundedRectangleBorder(
