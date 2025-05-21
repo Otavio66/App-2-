@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'tela_notificacoes.dart'; // importe a tela de notificações
 
 class TelaInicial extends StatelessWidget {
   final String nomeUsuario;
@@ -20,7 +21,12 @@ class TelaInicial extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.notifications, color: Colors.white),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const TelaNotificacoes()),
+              );
+            },
           ),
           IconButton(
             icon: const Icon(Icons.menu, color: Colors.white),
