@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
-import 'tela_notificacoes.dart'; // importe a tela de notificações
+import 'tela_notificacoes.dart';
+import 'tela_totais.dart';
+import 'tela_ativos.dart';
+import 'tela_resolvidos.dart';
+import 'tela_perfil.dart'; // Importa a tela perfil
 
 class TelaInicial extends StatelessWidget {
   final String nomeUsuario;
@@ -30,7 +34,17 @@ class TelaInicial extends StatelessWidget {
           ),
           IconButton(
             icon: const Icon(Icons.menu, color: Colors.white),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => TelaPerfil(
+                    nomeUsuario: nomeUsuario,
+                    emailUsuario: 'usuario@gmail.com', // substitua pelo email real
+                  ),
+                ),
+              );
+            },
           ),
           const SizedBox(width: 8),
         ],
@@ -108,7 +122,10 @@ class TelaInicial extends StatelessWidget {
                     children: [
                       GestureDetector(
                         onTap: () {
-                          print('Clicou em Totais');
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => const TelaTotais()),
+                          );
                         },
                         child: const Text(
                           'Totais',
@@ -122,7 +139,10 @@ class TelaInicial extends StatelessWidget {
                       const SizedBox(height: 6),
                       GestureDetector(
                         onTap: () {
-                          print('Clicou em Ativos');
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => const TelaAtivos()),
+                          );
                         },
                         child: const Text(
                           'Ativos',
@@ -136,7 +156,10 @@ class TelaInicial extends StatelessWidget {
                       const SizedBox(height: 6),
                       GestureDetector(
                         onTap: () {
-                          print('Clicou em Resolvidos');
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => const TelaResolvidos()),
+                          );
                         },
                         child: const Text(
                           'Resolvidos',
