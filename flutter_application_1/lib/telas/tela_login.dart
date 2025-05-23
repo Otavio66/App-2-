@@ -150,8 +150,28 @@ class _TelaLoginState extends State<TelaLogin> {
                       ),
                     ),
                     const SizedBox(height: 10),
+
+                    // Aqui está o botão Esqueceu sua senha? com popup
                     TextButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: const Text('Suporte'),
+                            content: const Text(
+                              'Entre em contato com o time de suporte:\n\n'
+                              'Email: suporte@exemplo.com\n'
+                              'Telefone: (11) 99999-9999',
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.of(context).pop(),
+                                child: const Text('Fechar'),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
                       child: const Text(
                         'Esqueceu sua senha?',
                         style: TextStyle(
@@ -160,6 +180,7 @@ class _TelaLoginState extends State<TelaLogin> {
                         ),
                       ),
                     ),
+
                   ],
                 ),
               ),
