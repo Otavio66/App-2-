@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'tela_login.dart'; // Importa a tela de login para navegação
 
 class TelaPerfil extends StatelessWidget {
   final String nomeUsuario;
@@ -98,7 +99,11 @@ class TelaPerfil extends StatelessWidget {
                   minimumSize: const Size(double.infinity, 40),
                 ),
                 onPressed: () {
-                  // ação sair
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (_) => const TelaLogin()),
+                    (route) => false,
+                  );
                 },
                 icon: const Icon(Icons.logout),
                 label: const Text(
