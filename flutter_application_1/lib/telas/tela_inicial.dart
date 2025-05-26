@@ -39,8 +39,7 @@ class TelaInicial extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                   builder: (_) => TelaPerfil(
-                    nomeUsuario: nomeUsuario,
-                    emailUsuario: 'usuario@gmail.com', // substitua pelo email real
+                    nomeUsuario: nomeUsuario, // só passe nomeUsuario
                   ),
                 ),
               );

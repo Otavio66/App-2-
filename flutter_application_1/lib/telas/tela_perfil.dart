@@ -4,16 +4,17 @@ import 'tela_login.dart'; // Importa a tela de login para navegação
 
 class TelaPerfil extends StatelessWidget {
   final String nomeUsuario;
-  final String emailUsuario;
 
   const TelaPerfil({
     super.key,
     required this.nomeUsuario,
-    required this.emailUsuario,
   });
 
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+    final email = user?.email ?? 'SEM EMAIL';
+
     return Scaffold(
       backgroundColor: Colors.grey[400],
       appBar: AppBar(
@@ -66,7 +67,7 @@ class TelaPerfil extends StatelessWidget {
 
               // Email com botão de editar
               _botaoInfo(
-                texto: emailUsuario.toUpperCase(),
+                texto: email.toUpperCase(),
                 icone: Icons.edit,
                 onPressed: () {
                   // ação editar email
