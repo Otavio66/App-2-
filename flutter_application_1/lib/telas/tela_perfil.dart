@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // Importa Firebase Auth
 import 'tela_login.dart'; // Importa a tela de login para navegação
 
 class TelaPerfil extends StatelessWidget {
@@ -98,7 +99,8 @@ class TelaPerfil extends StatelessWidget {
                   ),
                   minimumSize: const Size(double.infinity, 40),
                 ),
-                onPressed: () {
+                onPressed: () async {
+                  await FirebaseAuth.instance.signOut(); // Logout do Firebase
                   Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(builder: (_) => const TelaLogin()),
