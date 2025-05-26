@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class TelaNotificacoes extends StatelessWidget {
   const TelaNotificacoes({super.key});
@@ -20,73 +21,96 @@ class TelaNotificacoes extends StatelessWidget {
           style: TextStyle(color: Colors.grey, fontSize: 14),
         ),
       ),
-      body: Center(  // Centraliza todo o conteúdo
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _botaoRisco(
-              icon: Icons.warning_amber_rounded,
-              texto: 'NOVO RISCO',
-              data: 'Hoje',
-              corFundo: Colors.black87,
-            ),
-            const SizedBox(height: 8),
-            _botaoRisco(
-              icon: Icons.warning_amber_rounded,
-              texto: 'NOVO RISCO',
-              data: 'Hoje',
-              corFundo: Colors.black87,
-            ),
-            const SizedBox(height: 8),
-            _botaoRisco(
-              icon: Icons.check_circle_outline,
-              texto: 'RISCO RESOLVIDO',
-              data: 'Hoje',
-              corFundo: Colors.black87,
-            ),
-            const SizedBox(height: 8),
-            _botaoRisco(
-              icon: Icons.warning_amber_rounded,
-              texto: 'NOVO RISCO',
-              data: 'Ontem',
-              corFundo: Colors.black87,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('riscos')
+            .orderBy('data', descending: true)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Center(child: Text('Erro ao carregar riscos'));
+          }
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-  Widget _botaoRisco({
-    required IconData icon,
-    required String texto,
-    required String data,
-    required Color corFundo,
-  }) {
-    return Container(
-      width: 250, // largura fixa para alinhar e ficar centralizado
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-      decoration: BoxDecoration(
-        color: corFundo,
-        borderRadius: BorderRadius.circular(25),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, color: Colors.white),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              texto,
-              style: const TextStyle(
-                  color: Colors.white, fontWeight: FontWeight.bold),
-            ),
-          ),
-          Text(
-            data,
-            style: const TextStyle(color: Colors.white70),
-          ),
-        ],
+          final riscos = snapshot.data!.docs;
+
+          if (riscos.isEmpty) {
+            return const Center(
+              child: Text(
+                'Nenhum risco encontrado',
+                style: TextStyle(color: Colors.white70),
+              ),
+            );
+          }
+
+          return ListView.separated(
+            padding: const EdgeInsets.all(16),
+            itemCount: riscos.length,
+            separatorBuilder: (_, __) => const SizedBox(height: 12),
+            itemBuilder: (context, index) {
+              final risco = riscos[index];
+              final nomeProblema = risco['nomeProblema'] ?? 'Sem título';
+              final categoria = risco['categoria'] ?? 'Sem categoria';
+              final status = risco['status'] ?? 'Desconhecido';
+
+              final timestamp = risco['data'] as Timestamp?;
+              final dataFormatada = timestamp != null
+                  ? DateTime.fromMillisecondsSinceEpoch(
+                      timestamp.millisecondsSinceEpoch)
+                  : DateTime.now();
+
+              IconData icone = Icons.warning_amber_rounded;
+              Color corFundo = Colors.black87;
+              if (status.toString().toLowerCase() == 'resolvido') {
+                icone = Icons.check_circle_outline;
+                corFundo = Colors.green[800]!;
+              } else if (status.toString().toLowerCase() == 'ativo') {
+                icone = Icons.warning_amber_rounded;
+                corFundo = Colors.red[800]!;
+              }
+
+              return Container(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+                decoration: BoxDecoration(
+                  color: corFundo,
+                  borderRadius: BorderRadius.circular(25),
+                ),
+                child: Row(
+                  children: [
+                    Icon(icone, color: Colors.white),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            nomeProblema,
+                            style: const TextStyle(
+                                color: Colors.white, fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            categoria,
+                            style: const TextStyle(
+                              color: Colors.white70,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Text(
+                      '${dataFormatada.day}/${dataFormatada.month} ${dataFormatada.hour}:${dataFormatada.minute.toString().padLeft(2, '0')}',
+                      style: const TextStyle(color: Colors.white70),
+                    ),
+                  ],
+                ),
+              );
+            },
+          );
+        },
       ),
     );
   }
