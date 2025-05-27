@@ -4,6 +4,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class TelaAtivos extends StatelessWidget {
   const TelaAtivos({super.key});
 
+  Future<void> marcarComoResolvido(String docId) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('registro_riscos')
+          .doc(docId)
+          .update({'status': 'Resolvido'});
+    } catch (e) {
+      print('Erro ao marcar como resolvido: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final CollectionReference riscosCollection =
@@ -165,16 +176,25 @@ class TelaAtivos extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(width: 12),
-                          Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(15),
-                              color: Colors.grey[700],
+                          ElevatedButton(
+                            onPressed: () async {
+                              await marcarComoResolvido(doc.id);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Risco marcado como Resolvido!'),
+                                  duration: Duration(seconds: 2),
+                                ),
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.grey[300], // cor clara
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
                             ),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 4),
                             child: const Text(
                               'NÃO',
-                              style: TextStyle(color: Colors.white),
+                              style: TextStyle(color: Colors.black),
                             ),
                           ),
                         ],

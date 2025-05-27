@@ -173,7 +173,6 @@ class TelaResolvidos extends StatelessWidget {
                       ),
                       const SizedBox(height: 20),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           const Text(
                             'RESOLVIDO',
@@ -182,6 +181,7 @@ class TelaResolvidos extends StatelessWidget {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
+                          const SizedBox(width: 12),
                           ElevatedButton(
                             onPressed: () async {
                               await reativarRisco(doc.id);
@@ -193,12 +193,15 @@ class TelaResolvidos extends StatelessWidget {
                               );
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.orange[700],
+                              backgroundColor: Colors.grey[300], // cinza claro
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(20),
                               ),
                             ),
-                            child: const Text('Reativar'),
+                            child: const Text(
+                              'SIM',
+                              style: TextStyle(color: Colors.black),
+                            ),
                           ),
                         ],
                       )
