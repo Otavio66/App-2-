@@ -4,16 +4,19 @@ import 'tela_login.dart'; // Importa a tela de login para navegação
 
 class TelaPerfil extends StatelessWidget {
   final String nomeUsuario;
+  final String emailUsuario; // adiciona o parâmetro
 
   const TelaPerfil({
     super.key,
     required this.nomeUsuario,
+    required this.emailUsuario, // recebe o email por parâmetro
   });
 
   @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser;
-    final email = user?.email ?? 'SEM EMAIL';
+    // Remova esta linha, pois vai usar o email passado:
+    // final user = FirebaseAuth.instance.currentUser;
+    // final email = user?.email ?? 'SEM EMAIL';
 
     return Scaffold(
       backgroundColor: Colors.grey[400],
@@ -40,7 +43,6 @@ class TelaPerfil extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Ícone usuário
               Container(
                 width: 120,
                 height: 120,
@@ -65,9 +67,8 @@ class TelaPerfil extends StatelessWidget {
               ),
               const SizedBox(height: 20),
 
-              // Email com botão de editar
               _botaoInfo(
-                texto: email.toUpperCase(),
+                texto: emailUsuario.toUpperCase(), // usa o email recebido aqui
                 icone: Icons.edit,
                 onPressed: () {
                   // ação editar email
@@ -76,7 +77,6 @@ class TelaPerfil extends StatelessWidget {
 
               const SizedBox(height: 12),
 
-              // Alterar senha com botão de editar
               _botaoInfo(
                 texto: 'ALTERAR SENHA',
                 icone: Icons.edit,
@@ -87,7 +87,6 @@ class TelaPerfil extends StatelessWidget {
 
               const SizedBox(height: 12),
 
-              // Botão sair
               ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.grey[700],
@@ -101,7 +100,7 @@ class TelaPerfil extends StatelessWidget {
                   minimumSize: const Size(double.infinity, 40),
                 ),
                 onPressed: () async {
-                  await FirebaseAuth.instance.signOut(); // Logout do Firebase
+                  await FirebaseAuth.instance.signOut();
                   Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(builder: (_) => const TelaLogin()),

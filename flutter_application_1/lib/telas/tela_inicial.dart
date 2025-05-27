@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // Importa para pegar email
 import 'tela_notificacoes.dart';
 import 'tela_totais.dart';
 import 'tela_ativos.dart';
@@ -12,6 +13,9 @@ class TelaInicial extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+    final emailUsuario = user?.email ?? 'SEM EMAIL';
+
     return Scaffold(
       backgroundColor: Colors.grey[500],
       appBar: AppBar(
@@ -39,7 +43,8 @@ class TelaInicial extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                   builder: (_) => TelaPerfil(
-                    nomeUsuario: nomeUsuario, // só passe nomeUsuario
+                    nomeUsuario: nomeUsuario,
+                    emailUsuario: emailUsuario,
                   ),
                 ),
               );
