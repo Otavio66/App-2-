@@ -23,18 +23,23 @@ class TelaNotificacoes extends StatelessWidget {
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
-            .collection('riscos')
+            .collection('registro_riscos')
             .orderBy('data', descending: true)
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            return Center(child: Text('Erro ao carregar riscos'));
+            return const Center(
+              child: Text(
+                'Erro ao carregar riscos',
+                style: TextStyle(color: Colors.white70),
+              ),
+            );
           }
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          final riscos = snapshot.data!.docs;
+          final riscos = snapshot.data?.docs ?? [];
 
           if (riscos.isEmpty) {
             return const Center(
@@ -51,24 +56,31 @@ class TelaNotificacoes extends StatelessWidget {
             separatorBuilder: (_, __) => const SizedBox(height: 12),
             itemBuilder: (context, index) {
               final risco = riscos[index];
-              final nomeProblema = risco['nomeProblema'] ?? 'Sem título';
-              final categoria = risco['categoria'] ?? 'Sem categoria';
-              final status = risco['status'] ?? 'Desconhecido';
+              final data = risco.data()! as Map<String, dynamic>;
 
-              final timestamp = risco['data'] as Timestamp?;
+              final nomeProblema = data['nomeProblema'] ?? 'Sem título';
+              final categoria = data['categoria'] ?? 'Sem categoria';
+              final status = data['status'] ?? 'Desconhecido';
+
+              final timestamp = data['data'] as Timestamp?;
               final dataFormatada = timestamp != null
-                  ? DateTime.fromMillisecondsSinceEpoch(
-                      timestamp.millisecondsSinceEpoch)
+                  ? timestamp.toDate()
                   : DateTime.now();
 
               IconData icone = Icons.warning_amber_rounded;
               Color corFundo = Colors.black87;
-              if (status.toString().toLowerCase() == 'resolvido') {
+
+              final statusLower = status.toString().toLowerCase();
+              if (statusLower == 'resolvido') {
                 icone = Icons.check_circle_outline;
                 corFundo = Colors.green[800]!;
-              } else if (status.toString().toLowerCase() == 'ativo') {
+              } else if (statusLower == 'ativo') {
                 icone = Icons.warning_amber_rounded;
                 corFundo = Colors.red[800]!;
+              } else {
+                // status desconhecido ou outro
+                icone = Icons.info_outline;
+                corFundo = Colors.grey[700]!;
               }
 
               return Container(
@@ -102,7 +114,8 @@ class TelaNotificacoes extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      '${dataFormatada.day}/${dataFormatada.month} ${dataFormatada.hour}:${dataFormatada.minute.toString().padLeft(2, '0')}',
+                      '${dataFormatada.day.toString().padLeft(2, '0')}/${dataFormatada.month.toString().padLeft(2, '0')} '
+                      '${dataFormatada.hour.toString().padLeft(2, '0')}:${dataFormatada.minute.toString().padLeft(2, '0')}',
                       style: const TextStyle(color: Colors.white70),
                     ),
                   ],
