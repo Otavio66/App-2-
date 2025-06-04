@@ -1,124 +1,134 @@
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import '../utils/riscos_lidos.dart';
 
-class TelaNotificacoes extends StatelessWidget {
+final _local = FlutterLocalNotificationsPlugin();
+
+class TelaNotificacoes extends StatefulWidget {
   const TelaNotificacoes({super.key});
+  @override
+  State<TelaNotificacoes> createState() => _TelaNotificacoesState();
+}
+
+class _TelaNotificacoesState extends State<TelaNotificacoes> {
+  Set<String> _jaLidos = {};
+
+  @override
+  void initState() {
+    super.initState();
+    // carrega IDs lidos salvos no aparelho
+    RiscosLidos.carregar().then((set) => setState(() => _jaLidos = set));
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[500],
+      backgroundColor: Colors.grey[900],
       appBar: AppBar(
-        backgroundColor: Colors.grey[500],
+        backgroundColor: Colors.grey[900],
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => Navigator.pop(context),
         ),
-        automaticallyImplyLeading: false,
         title: const Text(
-          'Android Compact - 3',
-          style: TextStyle(color: Colors.grey, fontSize: 14),
+          'Novas ocorrências',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('registro_riscos')
-            .orderBy('data', descending: true)
-            .snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return const Center(
-              child: Text(
-                'Erro ao carregar riscos',
-                style: TextStyle(color: Colors.white70),
-              ),
-            );
+        stream:
+            FirebaseFirestore.instance
+                .collection('registro_riscos')
+                .where('status', isEqualTo: 'Ativo')
+                .orderBy('createdAt', descending: true)
+                .snapshots(),
+        builder: (context, snap) {
+          if (snap.hasError) {
+            return const Center(child: Text('Erro ao carregar dados'));
           }
-          if (snapshot.connectionState == ConnectionState.waiting) {
+          if (snap.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          final riscos = snapshot.data?.docs ?? [];
+          // descarta IDs já lidos
+          final docs =
+              (snap.data?.docs ?? [])
+                  .where((d) => !_jaLidos.contains(d.id))
+                  .toList();
 
-          if (riscos.isEmpty) {
-            return const Center(
-              child: Text(
-                'Nenhum risco encontrado',
-                style: TextStyle(color: Colors.white70),
-              ),
-            );
+          if (docs.isEmpty) {
+            return const Center(child: Text('Nenhuma ocorrência nova'));
           }
 
           return ListView.separated(
             padding: const EdgeInsets.all(16),
-            itemCount: riscos.length,
+            itemCount: docs.length,
             separatorBuilder: (_, __) => const SizedBox(height: 12),
-            itemBuilder: (context, index) {
-              final risco = riscos[index];
-              final data = risco.data()! as Map<String, dynamic>;
+            itemBuilder: (context, i) {
+              final doc = docs[i];
+              final data = doc.data()! as Map<String, dynamic>;
 
-              final nomeProblema = data['nomeProblema'] ?? 'Sem título';
-              final categoria = data['categoria'] ?? 'Sem categoria';
-              final status = data['status'] ?? 'Desconhecido';
+              final nome = data['nomeProblema'] ?? 'Sem título';
+              final cat = data['categoria'] ?? 'Sem categoria';
 
-              final timestamp = data['data'] as Timestamp?;
-              final dataFormatada = timestamp != null
-                  ? timestamp.toDate()
-                  : DateTime.now();
+              return InkWell(
+                borderRadius: BorderRadius.circular(25),
+                onTap: () async {
+                  // abre detalhes
+                  Navigator.pushNamed(
+                    context,
+                    '/detalheOcorrencia',
+                    arguments: {'docId': doc.id},
+                  );
 
-              IconData icone = Icons.warning_amber_rounded;
-              Color corFundo = Colors.black87;
+                  // marca como lido apenas no aparelho
+                  await RiscosLidos.adicionar(doc.id);
+                  setState(() => _jaLidos.add(doc.id));
 
-              final statusLower = status.toString().toLowerCase();
-              if (statusLower == 'resolvido') {
-                icone = Icons.check_circle_outline;
-                corFundo = Colors.green[800]!;
-              } else if (statusLower == 'ativo') {
-                icone = Icons.warning_amber_rounded;
-                corFundo = Colors.red[800]!;
-              } else {
-                // status desconhecido ou outro
-                icone = Icons.info_outline;
-                corFundo = Colors.grey[700]!;
-              }
-
-              return Container(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-                decoration: BoxDecoration(
-                  color: corFundo,
-                  borderRadius: BorderRadius.circular(25),
-                ),
-                child: Row(
-                  children: [
-                    Icon(icone, color: Colors.white),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            nomeProblema,
-                            style: const TextStyle(
-                                color: Colors.white, fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            categoria,
-                            style: const TextStyle(
-                              color: Colors.white70,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
+                  // cancela a notificação na bandeja (se existir)
+                  await _local.cancel(doc.id.hashCode);
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 10,
+                    horizontal: 16,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.red[800],
+                    borderRadius: BorderRadius.circular(25),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.warning_amber_rounded,
+                        color: Colors.white,
                       ),
-                    ),
-                    Text(
-                      '${dataFormatada.day.toString().padLeft(2, '0')}/${dataFormatada.month.toString().padLeft(2, '0')} '
-                      '${dataFormatada.hour.toString().padLeft(2, '0')}:${dataFormatada.minute.toString().padLeft(2, '0')}',
-                      style: const TextStyle(color: Colors.white70),
-                    ),
-                  ],
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              nome,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              cat,
+                              style: const TextStyle(
+                                color: Colors.white70,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               );
             },
