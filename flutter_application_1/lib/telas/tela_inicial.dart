@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // Importa para pegar email
+import 'package:firebase_auth/firebase_auth.dart';
 import 'tela_notificacoes.dart';
 import 'tela_totais.dart';
 import 'tela_ativos.dart';
 import 'tela_resolvidos.dart';
-import 'tela_perfil.dart'; // Importa a tela perfil
+import 'tela_perfil.dart';
+import 'tela_mapa.dart'; // <-- IMPORTAÇÃO DA NOVA TELA
 
 class TelaInicial extends StatelessWidget {
   final String nomeUsuario;
@@ -16,6 +17,8 @@ class TelaInicial extends StatelessWidget {
     final user = FirebaseAuth.instance.currentUser;
     final emailUsuario = user?.email ?? 'SEM EMAIL';
 
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       backgroundColor: Colors.grey[500],
       appBar: AppBar(
@@ -23,7 +26,7 @@ class TelaInicial extends StatelessWidget {
         elevation: 0,
         title: const Text(
           'Tela Inicial',
-          style: TextStyle(color: Colors.grey, fontSize: 12),
+          style: TextStyle(color: Colors.grey, fontSize: 14),
         ),
         automaticallyImplyLeading: false,
         actions: [
@@ -55,36 +58,39 @@ class TelaInicial extends StatelessWidget {
       ),
       body: Center(
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            const SizedBox(height: 20),
             Text(
               'BEM VINDO, $nomeUsuario !',
               style: const TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
-                fontSize: 16,
+                fontSize: 20,
               ),
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 50),
             ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.black87,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(25),
                 ),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 30,
-                  vertical: 12,
-                ),
+                minimumSize: Size(screenWidth * 0.6, 50),
               ),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const TelaMapa()),
+                );
+              },
               icon: const Icon(Icons.location_on),
               label: const Text(
                 'MAPA',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
               ),
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 40),
             Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -95,91 +101,58 @@ class TelaInicial extends StatelessWidget {
                       borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(15),
                         topRight: Radius.circular(15),
-                        bottomLeft: Radius.zero,
-                        bottomRight: Radius.zero,
                       ),
                     ),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 30,
-                      vertical: 12,
-                    ),
-                    minimumSize: const Size(150, 40),
+                    minimumSize: Size(screenWidth * 0.6, 50),
                   ),
                   onPressed: () {},
                   icon: const Icon(Icons.warning_amber_rounded),
                   label: const Text(
                     'RISCOS',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                   ),
                 ),
                 Container(
-                  width: 150,
-                  decoration: BoxDecoration(
+                  width: screenWidth * 0.6,
+                  decoration: const BoxDecoration(
                     color: Colors.white,
-                    borderRadius: const BorderRadius.only(
+                    borderRadius: BorderRadius.only(
                       bottomLeft: Radius.circular(15),
                       bottomRight: Radius.circular(15),
                     ),
                   ),
-                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
                   child: Column(
                     children: [
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (_) => const TelaTotais()),
-                          );
-                        },
-                        child: const Text(
-                          'Totais',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            decoration: TextDecoration.underline,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (_) => const TelaAtivos()),
-                          );
-                        },
-                        child: const Text(
-                          'Ativos',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            decoration: TextDecoration.underline,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (_) => const TelaResolvidos()),
-                          );
-                        },
-                        child: const Text(
-                          'Resolvidos',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            decoration: TextDecoration.underline,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ),
+                      _itemLink(context, 'Totais', const TelaTotais()),
+                      const SizedBox(height: 12),
+                      _itemLink(context, 'Ativos', const TelaAtivos()),
+                      const SizedBox(height: 12),
+                      _itemLink(context, 'Resolvidos', const TelaResolvidos()),
                     ],
                   ),
                 ),
               ],
             ),
+            const SizedBox(height: 40),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _itemLink(BuildContext context, String label, Widget target) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(context, MaterialPageRoute(builder: (_) => target));
+      },
+      child: Text(
+        label,
+        style: const TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 16,
+          decoration: TextDecoration.underline,
+          color: Colors.black,
         ),
       ),
     );
