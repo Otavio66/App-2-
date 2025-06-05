@@ -50,11 +50,7 @@ class TelaPerfil extends StatelessWidget {
                   color: Colors.grey[700],
                   borderRadius: BorderRadius.circular(30),
                 ),
-                child: const Icon(
-                  Icons.person,
-                  color: Colors.white,
-                  size: 80,
-                ),
+                child: const Icon(Icons.person, color: Colors.white, size: 80),
               ),
               const SizedBox(height: 12),
               Text(
@@ -134,10 +130,7 @@ class TelaPerfil extends StatelessWidget {
       child: Row(
         children: [
           Expanded(
-            child: Text(
-              texto,
-              style: const TextStyle(color: Colors.white),
-            ),
+            child: Text(texto, style: const TextStyle(color: Colors.white)),
           ),
           IconButton(
             icon: Icon(icone, color: Colors.white),

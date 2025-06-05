@@ -58,15 +58,6 @@ class _TelaLoginState extends State<TelaLogin> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.grey[700],
-                  borderRadius: BorderRadius.circular(50),
-                  border: Border.all(color: Colors.white, width: 3),
-                ),
-                padding: const EdgeInsets.all(20),
-                child: const Icon(Icons.bolt, size: 70, color: Colors.white),
-              ),
               const SizedBox(height: 20),
               Container(
                 width: 300,
@@ -156,20 +147,22 @@ class _TelaLoginState extends State<TelaLogin> {
                       onPressed: () {
                         showDialog(
                           context: context,
-                          builder: (context) => AlertDialog(
-                            title: const Text('Suporte'),
-                            content: const Text(
-                              'Entre em contato com o time de suporte:\n\n'
-                              'Email: suporte@exemplo.com\n'
-                              'Telefone: (11) 99999-9999',
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.of(context).pop(),
-                                child: const Text('Fechar'),
+                          builder:
+                              (context) => AlertDialog(
+                                title: const Text('Suporte'),
+                                content: const Text(
+                                  'Entre em contato com o time de suporte:\n\n'
+                                  'Email: suporte@exemplo.com\n'
+                                  'Telefone: (11) 99999-9999',
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed:
+                                        () => Navigator.of(context).pop(),
+                                    child: const Text('Fechar'),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
                         );
                       },
                       child: const Text(
@@ -180,7 +173,6 @@ class _TelaLoginState extends State<TelaLogin> {
                         ),
                       ),
                     ),
-
                   ],
                 ),
               ),

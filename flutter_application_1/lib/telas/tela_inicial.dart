@@ -5,7 +5,8 @@ import 'tela_totais.dart';
 import 'tela_ativos.dart';
 import 'tela_resolvidos.dart';
 import 'tela_perfil.dart';
-import 'tela_mapa.dart'; // <-- IMPORTAÇÃO DA NOVA TELA
+import 'tela_mapa.dart';
+import 'tela_relatorio.dart';
 
 class TelaInicial extends StatelessWidget {
   final String nomeUsuario;
@@ -45,10 +46,11 @@ class TelaInicial extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => TelaPerfil(
-                    nomeUsuario: nomeUsuario,
-                    emailUsuario: emailUsuario,
-                  ),
+                  builder:
+                      (_) => TelaPerfil(
+                        nomeUsuario: nomeUsuario,
+                        emailUsuario: emailUsuario,
+                      ),
                 ),
               );
             },
@@ -87,6 +89,27 @@ class TelaInicial extends StatelessWidget {
               icon: const Icon(Icons.location_on),
               label: const Text(
                 'MAPA',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              ),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.black87,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(25),
+                ),
+                minimumSize: Size(screenWidth * 0.6, 50),
+              ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const TelaRelatorio()),
+                );
+              },
+              icon: const Icon(Icons.analytics_outlined),
+              label: const Text(
+                'RELATÓRIO',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
               ),
             ),
